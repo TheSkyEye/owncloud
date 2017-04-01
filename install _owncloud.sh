@@ -3,7 +3,8 @@ apt-get install -y nginx php5-fpm php5-curl php5-mysql php5-gd php5-xmlrpc php5-
 
 wget --no-check-certificate https://download.owncloud.org/community/owncloud-9.1.4.tar.bz2
 tar xjvf owncloud-9.1.4.tar.bz2
-cp -r owncloud /var/www
+mkdir /var/www/owncloud
+cp -r owncloud /var/www/owncloud
 chown -R www-data:www-data /var/www/owncloud/
 
 
