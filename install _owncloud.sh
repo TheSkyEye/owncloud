@@ -1,5 +1,5 @@
 apt-get update && apt-get upgrade -y
-apt-get install -y nginx php5-fpm php-zip php-curl php-mysql php-gd php-xml php5-gd php5-json php5-intl php5-mcrypt php5-imagick php5-ldap mariadb-server mariadb-client phpmyadmin
+apt-get install -y nginx php5-fpm php5-curl php5-mysql php5-gd php5-xmlrpc php5-json php5-intl php5-mcrypt php5-imagick php5-ldap mariadb-server mariadb-client phpmyadmin
 
 wget --no-check-certificate https://download.owncloud.org/community/owncloud-9.1.4.tar.bz2
 tar xjvf owncloud-9.1.4.tar.bz2
@@ -111,8 +111,17 @@ server {
   }' >> /etc/nginx/sites-available/owncloud
 
 ln -s /etc/nginx/sites-available/owncloud /etc/nginx/sites-enabled/owncloud
- 
-  
+
+read -p "Enter your MySQL root password: " rootpass
+read -p "Database name: " dbname
+read -p "Database username: " dbuser
+read -p "Enter a password for user $dbuser: " userpass
+echo "CREATE DATABASE $dbname;" | mysql -u root -p$rootpass
+echo "CREATE USER '$dbuser'@'localhost' IDENTIFIED BY '$userpass';" | mysql -u root -p$rootpass
+echo "GRANT ALL PRIVILEGES ON $dbname.* TO '$dbuser'@'localhost';" | mysql -u root -p$rootpass
+echo "FLUSH PRIVILEGES;" | mysql -u root -p$rootpass
+echo "New MySQL database is successfully created"
+
 # Test de la configuration 
 nginx -t
 service nginx restart
