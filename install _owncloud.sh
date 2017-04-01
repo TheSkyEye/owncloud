@@ -1,5 +1,10 @@
 apt-get update && apt-get upgrade -y
-apt-get install -y nginx php5-fpm php5-curl php5-mysql php5-gd php5-xmlrpc php5-gd php5-json php5-intl php5-mcrypt php5-imagick php5-ldap mariadb-server mariadb-client php-xml-parser
+#apt-get install -y nginx php5-fpm php5-curl php5-mysql php5-gd php5-xmlrpc php5-gd php5-json php5-intl php5-mcrypt php5-imagick php5-ldap mariadb-server mariadb-client php-xml-parser
+apt-get install -y nginx mariadb-server mariadb-client
+wget -O - http://dl.hhvm.com/conf/hhvm.gpg.key | sudo apt-key add -
+echo deb http://dl.hhvm.com/ubuntu xenial main | sudo tee /etc/apt/sources.list.d/hhvm.list
+apt install -y hhvm
+/usr/share/hhvm/install_fastcgi.sh
 
 cd /var/www/
 wget --no-check-certificate https://download.owncloud.org/community/owncloud-9.1.4.tar.bz2
@@ -92,15 +97,15 @@ server {
    try_files $uri $uri/ /index.php;
    }
 
-   location ~ \.php(?:$|/) {
-   fastcgi_split_path_info ^(.+\.php)(/.+)$;
-   include fastcgi_params;
-   fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-   fastcgi_param PATH_INFO $fastcgi_path_info;
-   fastcgi_param HTTPS on;
-   fastcgi_param modHeadersAvailable true; #Evite denvoyer les header de sécurtié deux fois
-   fastcgi_pass unix:/var/run/php5-fpm.sock;
-   }
+   #location ~ \.php(?:$|/) {
+   #fastcgi_split_path_info ^(.+\.php)(/.+)$;
+   #include fastcgi_params;
+   #fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+   #fastcgi_param PATH_INFO $fastcgi_path_info;
+   #fastcgi_param HTTPS on;
+   #fastcgi_param modHeadersAvailable true; #Evite denvoyer les header de sécurtié deux fois
+   #fastcgi_pass unix:/var/run/php5-fpm.sock;
+   #}
 
    # Optionnel : positionne un header EXPIRES long sur les ressources statiques
    location ~* \.(?:jpg|jpeg|gif|bmp|ico|png|css|js|swf)$ {
@@ -116,4 +121,4 @@ ln -s /etc/nginx/sites-available/owncloud /etc/nginx/sites-enabled/owncloud
 # Test de la configuration 
 nginx -t
 service nginx restart
-service php-fpm restart
+#service php-fpm restart
