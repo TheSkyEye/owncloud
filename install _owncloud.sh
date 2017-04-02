@@ -13,12 +13,7 @@ tar xjvf owncloud-9.1.4.tar.bz2
 chown -R www-data:www-data /var/www/owncloud/
 
 
-echo '#upstream php-handler {
-  #server 127.0.0.1:9000;
-  #server unix:/var/run/php5-fpm.sock;
-  #}
-
-server {
+echo 'server {
   listen 80;
   server_name owncloud;
   # Force le passage en https
