@@ -6,6 +6,7 @@ wget -O- http://dl.hhvm.com/conf/hhvm.gpg.key | apt-key add -
 apt-get update
 apt install -y hhvm
 /usr/share/hhvm/install_fastcgi.sh
+/usr/bin/update-alternatives --install /usr/bin/php php /usr/bin/hhvm 60
 update-rc.d hhvm defaults
 cd /var/www/html
 wget --no-check-certificate https://download.owncloud.org/community/owncloud-9.1.4.tar.bz2
