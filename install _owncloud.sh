@@ -6,8 +6,8 @@ wget -O- http://dl.hhvm.com/conf/hhvm.gpg.key | apt-key add -
 apt-get update
 apt install -y hhvm
 /usr/share/hhvm/install_fastcgi.sh
-
-cd /var/www/
+update-rc.d hhvm defaults
+cd /var/www/html
 wget --no-check-certificate https://download.owncloud.org/community/owncloud-9.1.4.tar.bz2
 tar xjvf owncloud-9.1.4.tar.bz2
 chown -R www-data:www-data /var/www/owncloud/
@@ -52,7 +52,7 @@ server {
   add_header X-Robots-Tag none;
 
   # Répertoire dans lequel est installé Owncloud
-  root /var/www/owncloud/;
+  root /var/www/html/owncloud/;
   # Taille de fichier maximum que lon peut téléverser/uploader
   client_max_body_size 10G;
   fastcgi_buffers 64 4K;
@@ -98,15 +98,15 @@ server {
    try_files $uri $uri/ /index.php;
    }
 
-   #location ~ \.php(?:$|/) {
-   #fastcgi_split_path_info ^(.+\.php)(/.+)$;
-   #include fastcgi_params;
-   #fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-   #fastcgi_param PATH_INFO $fastcgi_path_info;
-   #fastcgi_param HTTPS on;
-   #fastcgi_param modHeadersAvailable true; #Evite denvoyer les header de sécurtié deux fois
-   #fastcgi_pass unix:/var/run/php5-fpm.sock;
-   #}
+   location ~ \.php(?:$|/) {
+   fastcgi_split_path_info ^(.+\.php)(/.+)$;
+   include fastcgi_params;
+   fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+   fastcgi_param PATH_INFO $fastcgi_path_info;
+   fastcgi_param HTTPS on;
+   fastcgi_param modHeadersAvailable true; #Evite denvoyer les header de sécurtié deux fois
+   fastcgi_pass unix:/var/run/php5-fpm.sock;
+   }
 
    # Optionnel : positionne un header EXPIRES long sur les ressources statiques
    location ~* \.(?:jpg|jpeg|gif|bmp|ico|png|css|js|swf)$ {
@@ -117,8 +117,17 @@ server {
   }' >> /etc/nginx/sites-available/owncloud
 
 ln -s /etc/nginx/sites-available/owncloud /etc/nginx/sites-enabled/owncloud
- 
-  
+
+read -p "Enter your MySQL root password: " rootpass
+read -p "Database name: " dbname
+read -p "Database username: " dbuser
+read -p "Enter a password for user $dbuser: " userpass
+echo "CREATE DATABASE $dbname;" | mysql -u root -p$rootpass
+echo "CREATE USER '$dbuser'@'localhost' IDENTIFIED BY '$userpass';" | mysql -u root -p$rootpass
+echo "GRANT ALL PRIVILEGES ON $dbname.* TO '$dbuser'@'localhost';" | mysql -u root -p$rootpass
+echo "FLUSH PRIVILEGES;" | mysql -u root -p$rootpass
+echo "New MySQL database is successfully created"
+
 # Test de la configuration 
 nginx -t
 service nginx restart
