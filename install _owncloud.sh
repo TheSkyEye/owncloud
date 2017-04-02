@@ -1,20 +1,24 @@
 apt-get update && apt-get upgrade -y
 apt-get install -y nginx php5 php5-fpm php5-curl php5-mysql php5-gd php5-xmlrpc php5-gd php5-json php5-intl php5-mcrypt php5-imagick php5-ldap mariadb-server mariadb-client php-xml-parser
 apt-get install -y nginx mariadb-server mariadb-client
-echo "deb http://dl.hhvm.com/debian jessie main" > /etc/apt/sources.list.d/hhvm.list
-wget -O- http://dl.hhvm.com/conf/hhvm.gpg.key | apt-key add -
-apt-get update
-apt install -y hhvm
-/usr/share/hhvm/install_fastcgi.sh
-/usr/bin/update-alternatives --install /usr/bin/php php /usr/bin/hhvm 60
-update-rc.d hhvm defaults
+#echo "deb http://dl.hhvm.com/debian jessie main" > /etc/apt/sources.list.d/hhvm.list
+#wget -O- http://dl.hhvm.com/conf/hhvm.gpg.key | apt-key add -
+#apt-get update
+#apt install -y hhvm
+#/usr/share/hhvm/install_fastcgi.sh
+#/usr/bin/update-alternatives --install /usr/bin/php php /usr/bin/hhvm 60
+#update-rc.d hhvm defaults
 cd /var/www/html
 wget --no-check-certificate https://download.owncloud.org/community/owncloud-9.1.4.tar.bz2
 tar xjvf owncloud-9.1.4.tar.bz2
 chown -R www-data:www-data /var/www/html/owncloud/
 
 
-echo 'server {
+echo '#upstream php-handler {
+  #server 127.0.0.1:9000;
+  server unix:/var/run/php5-fpm.sock;
+  }
+  server {
   listen 80;
   server_name owncloud;
   # Force le passage en https
