@@ -10,7 +10,7 @@ update-rc.d hhvm defaults
 cd /var/www/html
 wget --no-check-certificate https://download.owncloud.org/community/owncloud-9.1.4.tar.bz2
 tar xjvf owncloud-9.1.4.tar.bz2
-chown -R www-data:www-data /var/www/owncloud/
+chown -R www-data:www-data /var/www/html/owncloud/
 
 
 echo 'server {
